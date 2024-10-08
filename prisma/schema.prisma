@@ -31,7 +31,7 @@ model Product {
   description String
   purchasePrice String
   rentPrice String
-  datePosted DateTime
+  datePosted String
   perDay Boolean
   user User @relation(fields: [userId], references: [id])
   userId Int

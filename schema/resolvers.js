@@ -1,17 +1,32 @@
 const resolvers = {
     Query: {
-      users: async () => {
+      users: async (_, __, { prisma }) => {
         return await prisma.user.findMany(); 
       },
-      user: async (parent, args) => {
-        const {id} = args;
+      userById: async (_, args, { prisma }) => {
+        const { id } = args;
         return await prisma.find.unique({
           where: { id: Number(id) }
         });
-      }
+      },
+      products: async (_, __, { prisma }) => {
+        return await prisma.product.findMany();
+      },
+      productById: async (_, args, { prisma }) => {
+        const { id } = args;
+        return await prisma.product.findUnique({
+          where: { id: Number(id) }
+        });
+      },
+      productByUserId: async (_, args, { prisma }) => {
+        const { id } = args;
+        return await prisma.product.findMany({
+          where: { userId: Number(id) }
+        });
+      }      
     },
     Mutation: {
-      register: async (parent, { input }, { prisma }) => {
+      register: async (_, { input }, { prisma }) => {
         const { email, phoneNumber, firstName, lastName, password, confirmPassword, address } = input;
 
         const existingEmail = await prisma.user.findUnique({
@@ -47,7 +62,7 @@ const resolvers = {
 
         return newUser;
       },
-      login: async (parent, { input }, { prisma }) => {
+      login: async (_, { input }, { prisma }) => {
         const { email, password } = input;
 
         const existingUser = await prisma.user.findUnique({
@@ -63,6 +78,24 @@ const resolvers = {
         }
 
         return existingUser;
+      },
+      createProduct: async (_, { input }, { prisma }) => {
+        const { title, categories, description, purchasePrice, rentPrice, datePosted, perDay, userId } = input;
+
+        const newProduct = await prisma.product.create({
+          data: {
+            title,
+            categories,
+            description,
+            purchasePrice,
+            rentPrice,
+            datePosted, 
+            perDay,
+            userId
+          }
+        });
+
+        return newProduct;
       }
     }
   };
