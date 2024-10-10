@@ -23,6 +23,14 @@ const typeDefs = gql`
         user: User!
     }
 
+    type Transaction {
+        id: Int!
+        transactionType: transactionType!
+        product: Product!
+        primaryUser: User
+        secondaryUser: User
+    }
+
     input createProductInput {
         title: String!
         categories: Categories!
@@ -40,6 +48,11 @@ const typeDefs = gql`
         HOME APPLIANCES
         SPORTING GOODS
         OUTDOOR
+    }
+
+    enum transactionType {
+        SALE
+        RENTAL
     }
 
     input RegisterInput {
@@ -69,6 +82,11 @@ const typeDefs = gql`
         products: [Product!]!
         productById(id: ID!): Product!
         productByUserId(id: ID!): [Product!]!
+        
+        soldProductsByUserId(id: ID!): [Transaction!]!
+        boughtProductsByUserId(id: ID!): [Transaction!]!
+        rentedProductsByUserId(id: ID!): [Transaction!]!
+        lentProductsByUserId(id: ID!): [Transaction!]!
     }
 `;
 

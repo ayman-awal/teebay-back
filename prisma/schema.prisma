@@ -14,25 +14,39 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  firstName String
-  lastName String
-  address String
-  email String @unique
-  phoneNumber String @unique
-  password String
-  product Product[]
+  id                      Int       @id @default(autoincrement())
+  firstName               String
+  lastName                String
+  address                 String
+  email                   String     @unique
+  phoneNumber             String     @unique
+  password                String
+  product                 Product[]     @relation("UserProducts")
+  primaryTransactions     Transaction[] @relation("primaryUserTransactions")
+  secondaryTransactions   Transaction[] @relation("secondaryUserTransactions")
 }
 
 model Product {
-  id Int @id @default(autoincrement())
-  title String
-  categories String
-  description String
+  id            Int     @id @default(autoincrement())
+  title         String
+  categories    String
+  description   String
   purchasePrice String
-  rentPrice String
-  datePosted String
-  perDay Boolean
-  user User @relation(fields: [userId], references: [id])
-  userId Int
+  rentPrice     String
+  datePosted    String
+  perDay        Boolean
+  user          User    @relation("UserProducts", fields: [userId], references: [id])
+  userId        Int
+  transaction   Transaction[] @relation("ProductTransactions")
+}
+
+model Transaction {
+  id                 Int @id @default(autoincrement())
+  transactionType    String
+  product            Product @relation("ProductTransactions", fields: [productId], references: [id])
+  productId          Int
+  primaryUser        User @relation("primaryUserTransactions", fields: [primaryUserId], references: [id])
+  primaryUserId      Int
+  secondaryUser      User @relation("secondaryUserTransactions", fields: [secondaryUserId], references: [id])
+  secondaryUserId    Int
 }
