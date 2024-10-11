@@ -82,11 +82,7 @@ const typeDefs = gql`
         products: [Product!]!
         productById(id: ID!): Product!
         productByUserId(id: ID!): [Product!]!
-        
-        soldProductsByUserId(id: ID!): [Transaction!]!
-        boughtProductsByUserId(id: ID!): [Transaction!]!
-        rentedProductsByUserId(id: ID!): [Transaction!]!
-        lentProductsByUserId(id: ID!): [Transaction!]!
+        productsByTransaction(id: ID!, type: String!, action: String!): [Transaction!]!
     }
 `;
 

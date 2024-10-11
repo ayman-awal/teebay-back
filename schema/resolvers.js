@@ -24,54 +24,26 @@ const resolvers = {
           where: { userId: Number(id) }
         });
       },
-      soldProductsByUserId: async (_, args, { prisma }) => {
-        const { id } = args;
+      productsByTransaction: async (_, args, { prisma }) => {
+        const { id, type, action } = args;
+      
+        let whereClause = {
+          transactionType: type,
+        };
+      
+        if (action === 'Lent' || action === 'Sold') {
+          whereClause.primaryUserId = Number(id);
+        } else if (action === 'Bought' || action === 'Borrowed') {
+          whereClause.secondaryUserId = Number(id);
+        }
+      
         return await prisma.transaction.findMany({
-          where: { 
-            primaryUserId: Number(id), 
-            transactionType: 'SALE' 
-          },
+          where: whereClause,
           include: {
             product: true
           }
         });
       },
-      boughtProductsByUserId: async (_, args, { prisma }) => {
-        const { id } = args;
-        return await prisma.transaction.findMany({
-          where: { 
-            secondaryUserId: Number(id), 
-            transactionType: 'SALE' 
-          },
-          include: {
-            product: true
-          }
-        });
-      },
-      lentProductsByUserId: async (_, args, { prisma }) => {
-        const { id } = args;
-        return await prisma.transaction.findMany({
-          where: { 
-            primaryUserId: Number(id), 
-            transactionType: 'RENTAL' 
-          },
-          include: {
-            product: true
-          }
-        });
-      },
-      rentedProductsByUserId: async (_, args, { prisma }) => {
-        const { id } = args;
-        return await prisma.transaction.findMany({
-          where: { 
-            secondaryUserId: Number(id), 
-            transactionType: 'RENTAL' 
-          },
-          include: {
-            product: true
-          }
-        });
-      }
     },
     Mutation: {
       register: async (_, { input }, { prisma }) => {
