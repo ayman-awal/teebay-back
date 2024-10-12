@@ -27,22 +27,25 @@ model User {
 }
 
 model Product {
-  id            Int     @id @default(autoincrement())
-  title         String
-  categories    String
-  description   String
-  purchasePrice String
-  rentPrice     String
-  datePosted    String
-  perDay        Boolean
-  user          User    @relation("UserProducts", fields: [userId], references: [id])
-  userId        Int
-  transaction   Transaction[] @relation("ProductTransactions")
+  id                Int     @id @default(autoincrement())
+  title             String
+  isAvailable       Boolean @default(true)
+  categories        String
+  description       String
+  purchasePrice     String
+  rentPrice         String
+  datePosted        DateTime
+  rentFrequency     String
+  user              User    @relation("UserProducts", fields: [userId], references: [id])
+  userId            Int
+  transaction       Transaction[] @relation("ProductTransactions")
 }
 
 model Transaction {
   id                 Int @id @default(autoincrement())
   transactionType    String
+  rentFrom          DateTime 
+  rentTo            DateTime
   product            Product @relation("ProductTransactions", fields: [productId], references: [id])
   productId          Int
   primaryUser        User @relation("primaryUserTransactions", fields: [primaryUserId], references: [id])

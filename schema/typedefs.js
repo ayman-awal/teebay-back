@@ -1,6 +1,8 @@
 const { gql } = require("apollo-server-express");
+const { GraphQLDateTime } = ("graphql-scalars");
 
 const typeDefs = gql`
+    scalar DateTime
     type User {
         id: ID!
         firstName: String!
@@ -14,10 +16,12 @@ const typeDefs = gql`
     type Product {
         id: ID!
         title: String!
+        isAvailable: Boolean!
         categories: Categories!
         description: String!
         purchasePrice: String!
         rentPrice: String!
+        rentFrequency: rentFrequency!
         datePosted: String!
         perDay: Boolean!
         user: User!
@@ -26,19 +30,29 @@ const typeDefs = gql`
     type Transaction {
         id: Int!
         transactionType: transactionType!
-        product: Product!
-        primaryUser: User
-        secondaryUser: User
+        rentFrom: DateTime!
+        rentTo: DateTime!
+        productId: Int!
+        primaryUserId: User
+        secondaryUserId: User
+    }
+
+    input createTransactionInput {
+        transactionType: transactionType!
+        productId: Int!
+        primaryUserId: Int!
+        secondaryUserId: Int!
     }
 
     input createProductInput {
         title: String!
+        isAvailable: Boolean
         categories: Categories!
         description: String!
         purchasePrice: String!
         rentPrice: String!
-        datePosted: String!
-        perDay: Boolean!
+        rentFrequency: String!
+        datePosted: DateTime!
         userId: Int!
     }
 
@@ -53,6 +67,11 @@ const typeDefs = gql`
     enum transactionType {
         SALE
         RENTAL
+    }
+
+    enum rentFrequency {
+        PER_DAY
+        PER_HOUR
     }
 
     input RegisterInput {
@@ -70,10 +89,17 @@ const typeDefs = gql`
         password: String!
     }
 
+    input deleteProductInput{
+        userId: Int!
+        productId: Int!
+    }
+
     type Mutation {
         register(input: RegisterInput): User!
         login(input: LoginInput): User!
+        deleteProduct(input: deleteProductInput): Boolean!
         createProduct(input: createProductInput): Product!
+        createTransaction(input: createTransactionInput): Product!
     }
     
     type Query {

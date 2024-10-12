@@ -50,7 +50,7 @@ const resolvers = {
         const { email, phoneNumber, firstName, lastName, password, confirmPassword, address } = input;
 
         const existingEmail = await prisma.user.findUnique({
-          where: { email }
+          where: { email: email }
         });
 
         if(existingEmail){
@@ -58,7 +58,7 @@ const resolvers = {
         };
 
         const existingPhoneNumber = await prisma.user.findUnique({
-          where: { phoneNumber }
+          where: { phoneNumber: phoneNumber }
         });
 
         if(existingPhoneNumber){
@@ -99,23 +99,86 @@ const resolvers = {
 
         return existingUser;
       },
+      deleteProduct: async (_, { input }, { prisma }) => {
+        const { userId, productId } = input;
+
+        const exisitingProduct = await prisma.product.findUnique({
+          where: { id: productId }
+        });
+
+        const exisitingUser = await prisma.user.findUnique({
+          where: { id: userId }
+        });
+
+        if(!exisitingUser) {
+          throw new Error("User does not exist");
+        }
+
+        if(!exisitingProduct){
+          throw new Error("Product does not exist");
+        }
+
+        if(exisitingProduct.userId === userId ){
+          await prisma.product.delete({
+            where: {
+              id: productId,
+            },
+          });
+          return true;
+        }
+
+      },
       createProduct: async (_, { input }, { prisma }) => {
-        const { title, categories, description, purchasePrice, rentPrice, datePosted, perDay, userId } = input;
+        const { title, isAvailable, categories, description, purchasePrice, rentPrice, rentFrequency, datePosted, userId } = input;
 
         const newProduct = await prisma.product.create({
           data: {
-            title,
-            categories,
-            description,
-            purchasePrice,
-            rentPrice,
+            title, 
+            isAvailable, 
+            categories, 
+            description, 
+            purchasePrice, 
+            rentPrice, 
+            rentFrequency, 
             datePosted, 
-            perDay,
             userId
           }
         });
 
         return newProduct;
+      },
+      createTransaction: async (_, { input }, { prisma }) => {
+        const { transactionType, productId, primaryUserId, secondaryUserId } = input;
+        
+        const existingTransaction = await prisma.transaction.findFirst({
+          where: { productId: productId }
+        });
+
+        if(primaryUserId === secondaryUserId){
+          throw new Error("UserIds are the same");
+        }
+
+        if(existingTransaction){
+          throw new Error("The product is not available");
+        }
+
+        await prisma.product.update({
+          where: { id: productId },
+          data: {
+              isAvailable: false
+          }
+        });
+
+        const newTransaction = await prisma.transaction.create({
+          data: {
+            transactionType: transactionType, 
+            productId: productId, 
+            primaryUserId: primaryUserId, 
+            secondaryUserId: secondaryUserId
+          }
+        });
+
+        return newTransaction;
       }
     }
   };
