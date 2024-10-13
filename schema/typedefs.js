@@ -17,11 +17,11 @@ const typeDefs = gql`
         id: ID!
         title: String!
         isAvailable: Boolean!
-        categories: Categories!
+        categories: String!
         description: String!
         purchasePrice: String!
         rentPrice: String!
-        rentFrequency: rentFrequency!
+        rentFrequency: String!
         datePosted: String!
         perDay: Boolean!
         user: User!
@@ -47,7 +47,7 @@ const typeDefs = gql`
     input createProductInput {
         title: String!
         isAvailable: Boolean
-        categories: Categories!
+        categories: String!
         description: String!
         purchasePrice: String!
         rentPrice: String!
@@ -56,23 +56,23 @@ const typeDefs = gql`
         userId: Int!
     }
 
-    enum Categories {
-        ELECTRONICS
-        FURNITURE
-        HOME APPLIANCES
-        SPORTING GOODS
-        OUTDOOR
-    }
+    #enum Categories {
+    #    ELECTRONICS
+    #    FURNITURE
+    #    HOME APPLIANCES
+    #    SPORTING GOODS
+    #    OUTDOOR
+    #}
 
     enum transactionType {
         SALE
         RENTAL
     }
 
-    enum rentFrequency {
-        PER_DAY
-        PER_HOUR
-    }
+    #enum rentFrequency {
+    #    PER_DAY
+    #    PER_HOUR
+    #}
 
     input RegisterInput {
         firstName: String!
@@ -94,11 +94,22 @@ const typeDefs = gql`
         productId: Int!
     }
 
+    input editProductInput{
+        productId: Int!
+        title: String!
+        rentPrice: String!
+        purchasePrice: String!
+        description: String!
+        rentFrequency: String!
+        categories: String!
+    }
+
     type Mutation {
         register(input: RegisterInput): User!
         login(input: LoginInput): User!
         deleteProduct(input: deleteProductInput): Boolean!
         createProduct(input: createProductInput): Product!
+        editProduct(input: editProductInput): Product!
         createTransaction(input: createTransactionInput): Product!
     }
     

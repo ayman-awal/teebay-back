@@ -147,6 +147,32 @@ const resolvers = {
 
         return newProduct;
       },
+      editProduct: async (_, { input }, { prisma }) => {
+        const { productId, title, rentPrice, purchasePrice, description, rentFrequency, categories } = input;
+
+        const existingProduct = await prisma.product.findUnique({
+          where: { id: productId }
+        });
+
+        if (!existingProduct) {
+          throw new Error('Product does not exist');
+        }
+  
+        const updatedProduct = await prisma.product.update({
+            where: { id: productId },
+            data: {
+                title: title,
+                rentPrice: rentPrice,
+                purchasePrice: purchasePrice,
+                description: description,
+                rentFrequency: rentFrequency,
+                categories: categories,
+            }
+        });
+    
+        return updatedProduct;
+
+      },
       createTransaction: async (_, { input }, { prisma }) => {
         const { transactionType, productId, primaryUserId, secondaryUserId } = input;
         
