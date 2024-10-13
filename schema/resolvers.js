@@ -174,7 +174,7 @@ const resolvers = {
 
       },
       createTransaction: async (_, { input }, { prisma }) => {
-        const { transactionType, productId, primaryUserId, secondaryUserId } = input;
+        const { transactionType, productId, primaryUserId, secondaryUserId, rentFrom, rentTo } = input;
         
         const existingTransaction = await prisma.transaction.findFirst({
           where: { productId: productId }
@@ -200,7 +200,9 @@ const resolvers = {
             transactionType: transactionType, 
             productId: productId, 
             primaryUserId: primaryUserId, 
-            secondaryUserId: secondaryUserId
+            secondaryUserId: secondaryUserId,
+            rentFrom: rentFrom, 
+            rentTo: rentTo
           }
         });
 

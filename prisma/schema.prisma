@@ -44,8 +44,8 @@ model Product {
 model Transaction {
   id                 Int @id @default(autoincrement())
   transactionType    String
-  rentFrom          DateTime 
-  rentTo            DateTime
+  rentFrom           DateTime 
+  rentTo             DateTime
   product            Product @relation("ProductTransactions", fields: [productId], references: [id])
   productId          Int
   primaryUser        User @relation("primaryUserTransactions", fields: [primaryUserId], references: [id])

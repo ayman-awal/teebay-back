@@ -16,6 +16,7 @@ const typeDefs = gql`
     type Product {
         id: ID!
         title: String!
+        userId: String!
         isAvailable: Boolean!
         categories: String!
         description: String!
@@ -29,7 +30,7 @@ const typeDefs = gql`
 
     type Transaction {
         id: Int!
-        transactionType: transactionType!
+        transactionType: String!
         rentFrom: DateTime!
         rentTo: DateTime!
         productId: Int!
@@ -38,10 +39,12 @@ const typeDefs = gql`
     }
 
     input createTransactionInput {
-        transactionType: transactionType!
+        transactionType: String!
         productId: Int!
         primaryUserId: Int!
         secondaryUserId: Int!
+        rentFrom: DateTime!
+        rentTo: DateTime!
     }
 
     input createProductInput {
@@ -64,10 +67,10 @@ const typeDefs = gql`
     #    OUTDOOR
     #}
 
-    enum transactionType {
-        SALE
-        RENTAL
-    }
+    #enum transactionType {
+    #    SALE
+    #    RENTAL
+    #}
 
     #enum rentFrequency {
     #    PER_DAY
@@ -110,7 +113,7 @@ const typeDefs = gql`
         deleteProduct(input: deleteProductInput): Boolean!
         createProduct(input: createProductInput): Product!
         editProduct(input: editProductInput): Product!
-        createTransaction(input: createTransactionInput): Product!
+        createTransaction(input: createTransactionInput): Boolean!
     }
     
     type Query {
