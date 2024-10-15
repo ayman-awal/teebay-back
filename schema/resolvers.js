@@ -10,18 +10,28 @@ const resolvers = {
         });
       },
       products: async (_, __, { prisma }) => {
-        return await prisma.product.findMany();
+        return await prisma.product.findMany({
+          orderBy: {
+            datePosted: 'desc',
+          },
+        });
       },
       productById: async (_, args, { prisma }) => {
         const { id } = args;
         return await prisma.product.findUnique({
-          where: { id: Number(id) }
+          where: { id: Number(id) },
+          orderBy: {
+            datePosted: 'desc',
+          },
         });
       },
       productByUserId: async (_, args, { prisma }) => {
         const { id } = args;
         return await prisma.product.findMany({
-          where: { userId: Number(id) }
+          where: { userId: Number(id) },
+          orderBy: {
+            datePosted: 'desc',
+          },
         });
       },
       productsByTransaction: async (_, args, { prisma }) => {
@@ -36,13 +46,20 @@ const resolvers = {
         } else if (action === 'Bought' || action === 'Borrowed') {
           whereClause.secondaryUserId = Number(id);
         }
-      
-        return await prisma.transaction.findMany({
+
+        const transactions = await prisma.transaction.findMany({
           where: whereClause,
           include: {
             product: true
-          }
+          },
+          orderBy: {
+            id: 'desc',
+          },
         });
+
+        // return transactions;
+        // console.log('Transactions:', transactions.map(transaction => transaction.product));
+        return transactions.map(transaction => transaction.product);
       },
     },
     Mutation: {
@@ -118,7 +135,11 @@ const resolvers = {
           throw new Error("Product does not exist");
         }
 
-        if(exisitingProduct.userId === userId ){
+        if(exisitingProduct.userId === userId){
+          await prisma.transaction.deleteMany({
+            where: { productId: productId },
+          });
+
           await prisma.product.delete({
             where: {
               id: productId,
@@ -191,9 +212,19 @@ const resolvers = {
         await prisma.product.update({
           where: { id: productId },
           data: {
-              isAvailable: false
+              isAvailable: false,
+              userId: secondaryUserId
           }
         });
+
+        if(transactionType === 'SALE'){
+          await prisma.product.update({
+            where: { id: productId },
+            data: {
+                userId: secondaryUserId
+            }
+          });
+        }
 
         const newTransaction = await prisma.transaction.create({
           data: {
@@ -201,8 +232,8 @@ const resolvers = {
             productId: productId, 
             primaryUserId: primaryUserId, 
             secondaryUserId: secondaryUserId,
-            rentFrom: rentFrom, 
-            rentTo: rentTo
+            rentFrom: rentFrom || null, 
+            rentTo: rentTo || null
           }
         });
 

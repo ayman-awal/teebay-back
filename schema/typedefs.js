@@ -1,5 +1,4 @@
 const { gql } = require("apollo-server-express");
-const { GraphQLDateTime } = ("graphql-scalars");
 
 const typeDefs = gql`
     scalar DateTime
@@ -24,7 +23,6 @@ const typeDefs = gql`
         rentPrice: String!
         rentFrequency: String!
         datePosted: String!
-        perDay: Boolean!
         user: User!
     }
 
@@ -43,8 +41,8 @@ const typeDefs = gql`
         productId: Int!
         primaryUserId: Int!
         secondaryUserId: Int!
-        rentFrom: DateTime!
-        rentTo: DateTime!
+        rentFrom: DateTime
+        rentTo: DateTime
     }
 
     input createProductInput {
@@ -58,24 +56,6 @@ const typeDefs = gql`
         datePosted: DateTime!
         userId: Int!
     }
-
-    #enum Categories {
-    #    ELECTRONICS
-    #    FURNITURE
-    #    HOME APPLIANCES
-    #    SPORTING GOODS
-    #    OUTDOOR
-    #}
-
-    #enum transactionType {
-    #    SALE
-    #    RENTAL
-    #}
-
-    #enum rentFrequency {
-    #    PER_DAY
-    #    PER_HOUR
-    #}
 
     input RegisterInput {
         firstName: String!
@@ -113,7 +93,7 @@ const typeDefs = gql`
         deleteProduct(input: deleteProductInput): Boolean!
         createProduct(input: createProductInput): Product!
         editProduct(input: editProductInput): Product!
-        createTransaction(input: createTransactionInput): Boolean!
+        createTransaction(input: createTransactionInput): Transaction!
     }
     
     type Query {
@@ -122,7 +102,7 @@ const typeDefs = gql`
         products: [Product!]!
         productById(id: ID!): Product!
         productByUserId(id: ID!): [Product!]!
-        productsByTransaction(id: ID!, type: String!, action: String!): [Transaction!]!
+        productsByTransaction(id: ID!, type: String!, action: String!): [Product]!
     }
 `;
 
