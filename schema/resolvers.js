@@ -213,7 +213,6 @@ const resolvers = {
           where: { id: productId },
           data: {
               isAvailable: false,
-              userId: secondaryUserId
           }
         });
 
