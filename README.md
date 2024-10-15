@@ -2,8 +2,8 @@
 
 ## Initial Setup
 
-After cloning the project use `npm i` to install the necessary packages.
-Create a `.env` file and specify DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE" to connect to your database.
+After cloning the project use `npm i` to install the necessary packages.<br>
+Create a `.env` file and specify `DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"` to connect to your database.
 
 ### `nodemon start`
 
